@@ -71,4 +71,3 @@ export async function resolveIncident(store,id,outcome) {
   await store.query(`MATCH (i:Incident {id:$id}) SET i.status='resolved',i.outcome=$outcome,i.fix='' WITH i OPTIONAL MATCH (t:Ticket)-[:FOR]->(i) SET t.status='resolved'`,{id,outcome:outcome.trim()});
   return loadInvestigation(store,id);
 }
-

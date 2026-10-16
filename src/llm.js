@@ -15,7 +15,7 @@ export async function runToolAgent(store,report,{request=providerRequest}={}){
     {role:'user',content:JSON.stringify({alertedService:report.alertedService,question:report.question,incidentClock:report.incidentTime})}];
   const trace=[];
   for(let turn=0;turn<6;turn++){
-    const msg=await request({messages,tools,tool_choice:turn===0?{type:'function',function:{name:'candidates'}}:'auto',parallel_tool_calls:false});
+    const msg=await request({messages,tools,tool_choice:turn===0?{type:'function',function:{name:'candidates'}}:'auto',parallel_tool_calls:!(process.env.LLM_MODEL||'').includes('gpt-oss')});
     if(!msg||typeof msg!=='object')throw new Error('Provider returned an invalid message');
     const calls=msg.tool_calls||[];
     if(!calls.length){

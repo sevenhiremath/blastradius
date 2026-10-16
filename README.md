@@ -68,6 +68,8 @@ docker compose up -d --force-recreate app
 
 API use can incur provider charges. Only the synthetic alert and requested synthetic graph results are passed to the configured provider. The model has no arbitrary Cypher, shell, production actions, or messaging tool. The six-turn loop permits at most twelve tool calls, validates all service identifiers, and rejects unknown tools. Its output is shown as interpretation, alongside the deterministic evidence report.
 
+For a provider with a Free plan, see the [Groq setup instructions](docs/provider-setup.md). Paid API usage is optional; free-plan quotas still apply.
+
 ## Graph model
 
 ```mermaid
