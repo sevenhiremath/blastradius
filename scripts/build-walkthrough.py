@@ -43,9 +43,9 @@ for idx,scene in enumerate(scenes):
     draw.rounded_rectangle((540,138,1860,953),radius=12,fill='#f7f8f3')
     im.paste(screenshot,(540+(box[0]-screenshot.width)//2,138+(box[1]-screenshot.height)//2))
     draw.text((550,83),'ACTUAL APP CAPTURE',font=font(16,True),fill='#c0cdb0')
-    draw.text((550,982),'Synthetic data · Graph policy agent · Captured-state walkthrough',font=font(17),fill='#9bab8a')
+    draw.text((550,982),'Synthetic data · '+scene.get('mode','Graph policy agent')+' · Captured-state walkthrough',font=font(17),fill='#9bab8a')
     draw.text((1810,982),f'{idx+1:02d}/{len(scenes):02d}',font=font(17),fill='#c9d6b7')
-    # A progress indicator links the seven real app states.
+    # A progress indicator links the real app states.
     draw.rectangle((0,1072,int(1920*(idx+1)/len(scenes)),1080),fill='#e86239')
     frame=out/f'scene-{idx}.png';im.save(frame)
     audio=out/f'voice-{idx}.wav'

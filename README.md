@@ -8,7 +8,7 @@ Built for Graph Hacks 2026 · Team cloud9 · Primary track: **Agents That Act on
 
 ![BlastRadius investigation](docs/screenshots/overview.jpg)
 
-[Watch the 95-second walkthrough](docs/walkthrough.mp4) · [Review the graph queries](docs/queries.cypher) · [Read the validation record](docs/verification.md)
+[Watch the two-minute walkthrough](docs/walkthrough.mp4) · [Review the graph queries](docs/queries.cypher) · [Read the validation record](docs/verification.md)
 
 ## Run it
 
@@ -52,7 +52,7 @@ All amounts are synthetic annual contract exposure, not actual losses. No rollba
 ## Two execution modes
 
 - **Graph policy agent (default, verified):** a deterministic tool loop calls FalkorDB for candidate changes, customer paths, ownership, and incident memory. An explicit policy ranks changes by error increase, then recency. A change below a ten-point error increase is weak evidence. The policy is intentionally inspectable; it is not represented as a model call.
-- **AI tool agent (optional):** a configured model chooses among four bounded graph tools and explains their actual results. Configure `LLM_API_KEY`, `LLM_BASE_URL`, and `LLM_MODEL` in `.env`, restart/recreate the app, then choose **Response desk → Run AI tool agent**. The default endpoint is OpenAI-compatible Chat Completions; the model is configurable. This path is implemented and tested with a simulated provider plus real FalkorDB queries; a live paid provider has **not** been validated in this build.
+- **AI tool agent (optional):** a configured model chooses among four bounded graph tools, then returns a structured deployment, customer, and response selection. The app validates that selection against the retrieved graph rows and renders the factual report from those rows. Configure `LLM_API_KEY`, `LLM_BASE_URL`, and `LLM_MODEL` in `.env`, restart/recreate the app, then choose **Response desk → Run AI tool agent**. Live checks with **Qwen 3.8 27B on Groq's Free plan** passed for the baseline, added dependency, and insufficient-evidence cases. Results and actual tool traces are recorded in `docs/live-ai-*-check.json` and `docs/live-ai-check.json`.
 
 Example `.env` (keep the real key out of Git):
 
@@ -66,7 +66,7 @@ LLM_MODEL=gpt-4.1-mini
 docker compose up -d --force-recreate app
 ```
 
-API use can incur provider charges. Only the synthetic alert and requested synthetic graph results are passed to the configured provider. The model has no arbitrary Cypher, shell, production actions, or messaging tool. The six-turn loop permits at most twelve tool calls, validates all service identifiers, and rejects unknown tools. Its output is shown as interpretation, alongside the deterministic evidence report.
+API use can incur provider charges on a paid plan. Only the synthetic alert and requested synthetic graph results are passed to the configured provider. The model has no arbitrary Cypher, shell, production actions, or messaging tool. The six-turn loop permits at most twelve tool calls, validates all service identifiers, and rejects unknown tools. Final selections must match a retrieved deployment and the exact customer set; weak evidence cannot authorize the rollback response category. Prose or extra invented fields are rejected. The final narrative is rendered from database rows, not freely generated factual claims. This checks fidelity to retrieved records, not whether the source data or causal hypothesis is true.
 
 For a provider with a Free plan, see the [Groq setup instructions](docs/provider-setup.md). Paid API usage is optional; free-plan quotas still apply.
 
@@ -129,6 +129,8 @@ Tests use isolated, uniquely named graphs and remove only those test graphs. Eva
 
 The included evaluation checks candidate selection and exact customer exposure on **five fixed synthetic scenarios**, plus the dependency mutation. It is a regression check, not a general accuracy benchmark or evidence that the model can diagnose real outages. Integration tests also cover persisted outcomes, reopening memory through a new database connection, idempotent tickets, invalid scenarios, and rejecting unsupported model tools. The optional model test uses a simulated provider and says so explicitly.
 
+Separately, `node scripts/live-check.js`, `node scripts/live-check.js changed`, and `node scripts/live-check.js analytics` run real provider checks against the local app. These are **not part of the key-free test suite** and use the configured provider quota. The three included live checks verify exact selected customers and response categories. The AI selection and its trace are persisted with the report and can be reopened from incident memory.
+
 ## Architecture and boundaries
 
 Browser → local Node HTTP server → official FalkorDB client → FalkorDB graph. The optional model receives only bounded tool outputs. Writes and investigations are serialized in this single-user app to keep a report internally consistent while a dependency changes.
@@ -151,6 +153,6 @@ Browser → local Node HTTP server → official FalkorDB client → FalkorDB gra
 
 ## AI assistance and participant responsibility
 
-Codex assisted with the initial implementation, tests, interface, and draft materials. The participant must review and understand the code, validate the optional live model path, add meaningful technical decisions or improvements, and accurately describe their own contribution before submission. See `AI_DISCLOSURE.md`. A functioning app is not a guarantee of eligibility or a prize.
+Codex assisted with the initial implementation, tests, interface, provider validation, and draft materials. The participant must review and understand the code, reproduce the demo, add meaningful technical decisions or improvements, and accurately describe their own contribution before submission. See `AI_DISCLOSURE.md`. A functioning app is not a guarantee of eligibility or a prize.
 
 MIT licensed. Synthetic names, companies, contracts, and measurements are fictional.

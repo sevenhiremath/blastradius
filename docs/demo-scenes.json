@@ -1,9 +1,107 @@
 [
-  {"image":"overview.jpg","crop":[218,65,1425,1130],"title":"One alert.\nThe whole picture.","label":"01 / INVESTIGATE","detail":"A working incident agent\nwith FalkorDB at its core.","narration":"Checkout is failing. But customer exposure does not stop at the service that raised the alert. BlastRadius follows the relationships behind an incident and makes its response explainable."},
-  {"image":"baseline.jpg","crop":[218,0,1425,1039],"title":"3 customers.\n420 thousand dollars.","label":"02 / MAP EXPOSURE","detail":"Annual revenue exposed.\nNot confirmed losses.","narration":"The graph policy agent follows live FalkorDB queries to a recent Payments deployment. Three customers are connected to that failure point, representing four hundred and twenty thousand dollars in synthetic annual revenue exposure."},
-  {"image":"path.jpg","crop":[245,100,1390,710],"title":"Every answer\nhas a path.","label":"03 / TRACE THE EVIDENCE","detail":"Customer → service → dependency\nThe complete relationship chain.","narration":"Northstar reaches Payments through Storefront and Checkout. The graph also finds the response owner and a previous incident. These are source-backed hypotheses, not proof that the deployment caused the outage."},
-  {"image":"query.jpg","crop":[245,155,1390,965],"title":"Open the query.\nInspect the result.","label":"04 / VERIFY","detail":"Actual Cypher, parameters,\nand database rows.","narration":"Open the query trace to inspect the actual Cypher, parameters, and returned records. Source links expose the synthetic service catalog and deployment telemetry. The evidence can be checked independently of the wording."},
-  {"image":"changed.jpg","crop":[245,300,1400,1130],"title":"One new edge.\nOne more customer.","label":"05 / CHANGE THE CONTEXT","detail":"Analytics → Payments\n4 customers / $630k exposed.","narration":"Now add one relationship: Analytics depends on Payments. A fresh investigation discovers Cedar Health. Exposure rises to four customers and six hundred and thirty thousand dollars. The coordination step changes because the graph changed."},
-  {"image":"memory.jpg","crop":[245,110,1390,970],"title":"Resolve today.\nRemember tomorrow.","label":"06 / PERSIST THE OUTCOME","detail":"Incidents, tickets, and outcomes\nstored in FalkorDB.","narration":"Create a local ticket and record an observed outcome. Incidents and outcomes persist in FalkorDB. This was verified across a database container replacement, so the next session can retrieve what happened."},
-  {"image":"abstain.jpg","crop":[245,300,1400,1100],"title":"Know when\nto gather evidence.","label":"07 / ACT WITH CONTEXT","detail":"No supporting change?\nNo rollback recommendation.","narration":"With the extra dependency removed, Analytics has no recent supporting change. The agent asks for more evidence instead of recommending rollback. This walkthrough uses the graph policy mode; live model analysis is an optional, separately configured tool agent."}
+  {
+    "image": "overview.jpg",
+    "crop": [
+      218,
+      65,
+      1425,
+      1130
+    ],
+    "title": "One alert.\nThe whole picture.",
+    "label": "01 / INVESTIGATE",
+    "detail": "A working incident agent\nwith FalkorDB at its core.",
+    "narration": "Checkout is failing. But customer exposure does not stop at the service that raised the alert. BlastRadius follows the relationships behind an incident and makes its response explainable."
+  },
+  {
+    "image": "baseline.jpg",
+    "crop": [
+      218,
+      0,
+      1425,
+      1039
+    ],
+    "title": "3 customers.\n420 thousand dollars.",
+    "label": "02 / MAP EXPOSURE",
+    "detail": "Annual revenue exposed.\nNot confirmed losses.",
+    "narration": "The graph policy agent follows live FalkorDB queries to a recent Payments deployment. Three customers are connected to that failure point, representing four hundred and twenty thousand dollars in synthetic annual revenue exposure."
+  },
+  {
+    "image": "path.jpg",
+    "crop": [
+      245,
+      100,
+      1390,
+      710
+    ],
+    "title": "Every answer\nhas a path.",
+    "label": "03 / TRACE THE EVIDENCE",
+    "detail": "Customer → service → dependency\nThe complete relationship chain.",
+    "narration": "Northstar reaches Payments through Storefront and Checkout. The graph also finds the response owner and a previous incident. These are source-backed hypotheses, not proof that the deployment caused the outage."
+  },
+  {
+    "image": "query.jpg",
+    "crop": [
+      245,
+      155,
+      1390,
+      965
+    ],
+    "title": "Open the query.\nInspect the result.",
+    "label": "04 / VERIFY",
+    "detail": "Actual Cypher, parameters,\nand database rows.",
+    "narration": "Open the query trace to inspect the actual Cypher, parameters, and returned records. Source links expose the synthetic service catalog and deployment telemetry. The evidence can be checked independently of the wording."
+  },
+  {
+    "image": "changed.jpg",
+    "crop": [
+      245,
+      300,
+      1400,
+      1130
+    ],
+    "title": "One new edge.\nOne more customer.",
+    "label": "05 / CHANGE THE CONTEXT",
+    "detail": "Analytics → Payments\n4 customers / $630k exposed.",
+    "narration": "Now add one relationship: Analytics depends on Payments. A fresh investigation discovers Cedar Health. Exposure rises to four customers and six hundred and thirty thousand dollars. The coordination step changes because the graph changed."
+  },
+  {
+    "image": "memory.jpg",
+    "crop": [
+      245,
+      110,
+      1390,
+      970
+    ],
+    "title": "Resolve today.\nRemember tomorrow.",
+    "label": "06 / PERSIST THE OUTCOME",
+    "detail": "Incidents, tickets, and outcomes\nstored in FalkorDB.",
+    "narration": "Create a local ticket and record an observed outcome. Incidents and outcomes persist in FalkorDB. This was verified across a database container replacement, so the next session can retrieve what happened."
+  },
+  {
+    "image": "abstain.jpg",
+    "crop": [
+      245,
+      300,
+      1400,
+      1100
+    ],
+    "title": "Know when\nto gather evidence.",
+    "label": "07 / ACT WITH CONTEXT",
+    "detail": "No supporting change?\nNo rollback recommendation.",
+    "narration": "With the extra dependency removed, Analytics has no recent supporting change. The agent asks for more evidence instead of recommending rollback. This walkthrough uses the graph policy mode; live model analysis is an optional, separately configured tool agent."
+  },
+  {
+    "image": "live-ai.jpg",
+    "crop": [
+      245,
+      28,
+      1390,
+      860
+    ],
+    "title": "Real AI.\nVerifiable decisions.",
+    "label": "08 / LIVE AI TOOL RUN",
+    "detail": "Qwen on Groq Free plan.\nSelections checked against graph rows.",
+    "mode": "Real Qwen / Groq tool agent",
+    "narration": "The real model also calls all four graph tools. Its final deployment and customer selections must match retrieved records. The app renders facts from those records, so an invented version number cannot enter the validated report. This is an actual Groq model run, saved with its tool trace."
+  }
 ]

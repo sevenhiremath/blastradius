@@ -3,7 +3,9 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
 const shortMoney=n=>`$${(n/1000).toFixed(0)}k`;
 const sourceLink=ref=>`<button class="source-link source-id" data-source="${esc(ref)}">${esc(ref)}</button>`;
-let state={graph:null,scenarios:[],report:null,tab:'evidence',selected:null,history:{incidents:[],tickets:[]},busy:false,modelEnabled:false,stale:false};
+const modelHtml=n=>`<p class="inline-note">${esc(n.model)} · ${n.trace.length} graph tool calls · ${esc(n.validation)}</p><div class="model-text">${esc(n.text)}</div>${n.trace.map(t=>`<details class="trace-item"><summary>${esc(t.tool)}</summary><pre>${esc(JSON.stringify(t,null,2))}</pre></details>`).join('')}`;
+let state={graph:null,scenarios:[],report:null,tab:'evidence',selected:null,history:{incidents:[],tickets:[]},busy:false,modelEnabled:false,stale:false,staleReason:''};
+const staleMessage=()=>`${state.staleReason||'Context changed'}. Run again to refresh this investigation.`;
 let toastTimer;
 function toast(message,error=false){$('#toast').textContent=message;$('#toast').className=`visible${error?' error':''}`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').className='',6500);}
 async function api(url,data){const response=await fetch(url,data?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{});const json=await response.json();if(!response.ok)throw new Error(json.error||'Request failed');return json;}
@@ -38,7 +40,7 @@ function renderGraph(){
   }
   $('#graph').innerHTML=svg;
   $('#graph-count').textContent=`${nodes.length} nodes · ${edges.length} edges`;
-  $('#graph-footer').textContent=state.stale?'Graph updated. Run again to refresh the investigation.':report?`${report.customers.length} customers reached through live graph traversals.`:'Your context lives in FalkorDB.';
+  $('#graph-footer').textContent=state.stale?staleMessage():report?`${report.customers.length} ${report.customers.length===1?'customer':'customers'} reached through live graph traversals.`:'Your context lives in FalkorDB.';
 }
 function renderReport(){
   const r=state.report;
@@ -46,11 +48,11 @@ function renderReport(){
   $('#metric-arr').textContent=shortMoney(r.arr);
   $('#metric-service').textContent=name(r.focalService);
   $('#metric-tools').textContent=r.trace.length;
-  $('#customer-note').textContent=state.stale?'Previous graph state — run again':'Connected to the failure point';
+  $('#customer-note').textContent=state.stale?'Saved snapshot — run again':'Connected to the failure point';
   $('#service-note').textContent=r.confidence;
   $('#tool-note').textContent=`${r.elapsedMs} ms · queries + policy`;
   $('#evidence-count').textContent=r.customers.length;
-  $('#assessment-body').innerHTML=`${state.stale?'<div class="stale-notice">Graph changed. This report shows the previous graph state. Run again.</div>':''}
+  $('#assessment-body').innerHTML=`${state.stale?`<div class="stale-notice">${esc(staleMessage())}</div>`:''}
     <span class="confidence${r.rollbackSuggested?'':' weak'}">${esc(r.confidence)}</span><h3 class="finding-title">${r.candidate?esc(r.candidate.name):'Pause. Gather evidence.'}</h3>
     <p class="finding-summary">${esc(r.summary)}</p>${r.candidate?`<div>↳ ${sourceLink(r.candidate.source)}</div>`:''}<div class="assessment-divider"></div>
     <div class="section-label">RESPONSE OWNER</div>${r.owners.map(o=>`<div class="owner-row"><span class="avatar">${esc(o.name.split(' ').map(n=>n[0]).join(''))}</span><div><strong>${esc(o.name)}</strong><small>${esc(o.team)}</small></div></div>`).join('')}
@@ -78,31 +80,31 @@ function renderDetails(){
     const recalled=r?.memories||[];
     root.innerHTML=`<div class="memory-list">${recalled.length?'<div class="inline-note">RECALLED FOR THIS INVESTIGATION</div>':''}${recalled.map(m=>`<article class="memory-card"><div class="memory-meta">${esc(m.id)} · ${esc(m.status||'recorded')} · ${esc(m.createdAt)}</div><h3>${esc(m.title)}</h3><p>${esc(m.outcome||'No outcome recorded yet.')}</p><span class="source-id">${esc(m.source)}</span></article>`).join('')}
     <div class="inline-note">SAVED INVESTIGATIONS · ${state.history.incidents.length} MOST RECENT · PERSISTED IN FALKORDB</div>${state.history.incidents.length?state.history.incidents.map(i=>`<article class="memory-card"><div class="memory-meta">${esc(i.service)} · ${esc(i.status)} · ${esc(new Date(i.createdAt).toLocaleString())}</div><h3>${esc(i.title)}</h3>${i.outcome?`<p>${esc(i.outcome)}</p>`:''}<button class="secondary" data-open="${esc(i.id)}">Open saved investigation ↗</button></article>`).join(''):'<p class="inline-note">No investigations saved yet. Run one, then reload to verify memory persists.</p>'}</div>`;
-    root.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',async()=>{try{state.report=await api(`/api/investigations/${btn.dataset.open}`);state.stale=true;state.selected=null;$('#scenario').value=state.report.scenario;updateScenario();renderReport();toast('Saved report opened. Run again to compare with the current graph.');}catch(e){toast(e.message,true);}}));
+    root.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',async()=>{try{state.report=await api(`/api/investigations/${btn.dataset.open}`);state.stale=true;state.staleReason='Saved report';state.selected=null;$('#scenario').value=state.report.scenario;updateScenario();renderReport();toast('Saved report opened. Run again to compare with the current graph.');}catch(e){toast(e.message,true);}}));
   }
   if(state.tab==='response'){
     root.innerHTML=`<div class="response-area">${r?`<h3>Response plan</h3>${r.actions.map((a,i)=>`<div class="action-row"><span class="action-number">0${i+1}</span><span>${esc(a.text)}</span></div>`).join('')}
       <p class="inline-note">Local coordination only. Rollback and customer notifications are recommendations, not executed actions.</p>
       <label for="outcome">Record the observed outcome so the next investigation can learn from it</label><textarea id="outcome" maxlength="2000" placeholder="What did you verify? What action worked? Record only what you observed.">${esc(r.outcome||'')}</textarea><button id="resolve" class="secondary" ${state.stale?'disabled':''}>Save outcome to memory</button>
-      <div class="assessment-divider"></div><h3>Optional model analysis</h3><p class="inline-note">${state.modelEnabled?'A model can call bounded graph tools to investigate this alert and explain its findings.':'The graph policy agent is active. Configure LLM_API_KEY in .env for optional AI tool calling and analysis.'}</p><button class="secondary" id="narrate" ${state.modelEnabled?'':'disabled'}>✳ Run AI tool agent</button><div id="model-output"></div><div class="assessment-divider"></div>`:'<p class="inline-note">Run an investigation to create a response plan.</p>'}
+      <div class="assessment-divider"></div><h3>AI tool agent</h3><p class="inline-note">${state.modelEnabled?'The model selects graph tools and records. Its final selection is validated; the report uses facts from retrieved rows.':'The graph policy agent is active. Configure LLM_API_KEY in .env for optional AI tool calling and analysis.'}</p><button class="secondary" id="narrate" ${state.modelEnabled&&!state.stale?'':'disabled'}>✳ Run AI tool agent</button><div id="model-output">${r.aiAnalysis?modelHtml(r.aiAnalysis):''}</div><div class="assessment-divider"></div>`:'<p class="inline-note">Run an investigation to create a response plan.</p>'}
       <h3>Local incident tickets</h3>${state.history.tickets.length?state.history.tickets.map(t=>`<div class="ticket-line"><span><strong>${esc(t.id)}</strong> · ${esc(t.title)}</span><span>${esc(t.status)}</span></div>`).join(''):'<p class="inline-note">No tickets yet. Create one from the agent assessment.</p>'}</div>`;
     if(r){
       $('#resolve').addEventListener('click',async()=>{const outcome=$('#outcome').value.trim();if(!outcome){toast('Enter an observed outcome first.',true);return;}try{await api('/api/resolve',{id:r.id,outcome});state.report.outcome=outcome;await refreshHistory();renderDetails();toast('Outcome saved. Future investigations can recall it.');}catch(e){toast(e.message,true);}});
-      $('#narrate').addEventListener('click',async()=>{const btn=$('#narrate');btn.disabled=true;btn.textContent='Calling graph tools…';try{const n=await api('/api/ai-agent',{id:r.id});$('#model-output').innerHTML=`<p class="inline-note">${esc(n.model)} · ${n.trace.length} tool calls · AI interpretation; verify against graph evidence.</p><div class="model-text">${esc(n.text)}</div>${n.trace.map(t=>`<details class="trace-item"><summary>${esc(t.tool)}</summary><pre>${esc(JSON.stringify(t,null,2))}</pre></details>`).join('')}`;}catch(e){toast(e.message,true);}finally{btn.disabled=false;btn.textContent='✳ Run AI tool agent';}});
+      $('#narrate').addEventListener('click',async()=>{const btn=$('#narrate');btn.disabled=true;btn.textContent='Calling graph tools…';try{const n=await api('/api/ai-agent',{id:r.id});state.report.aiAnalysis=n;$('#model-output').innerHTML=modelHtml(n);}catch(e){toast(e.message,true);}finally{btn.disabled=false;btn.textContent='✳ Run AI tool agent';}});
     }
   }
 }
 async function refreshHistory(){state.history=await api('/api/history');}
 function updateScenario(){const s=state.scenarios.find(s=>s.id===$('#scenario').value);$('#severity').textContent=s.severity;}
-$('#scenario').addEventListener('change',()=>{updateScenario();if(state.report){state.stale=true;renderReport();}});
+$('#scenario').addEventListener('change',()=>{updateScenario();if(state.report){state.stale=true;state.staleReason='Alert changed';renderReport();}});
 $('#run').addEventListener('click',async()=>{
   busy(true);
-  try{state.report=await api('/api/investigate',{scenario:$('#scenario').value});state.selected=null;state.stale=false;await refreshHistory();renderReport();toast(`Investigation complete. ${state.report.customers.length} customers exposed · ${state.report.trace.length} graph tools called.`);}catch(e){toast(e.message,true);}finally{busy(false);}
+  try{state.report=await api('/api/investigate',{scenario:$('#scenario').value});state.selected=null;state.stale=false;await refreshHistory();renderReport();toast(`Investigation complete. ${state.report.customers.length} ${state.report.customers.length===1?'customer':'customers'} exposed · ${state.report.trace.length} graph tools called.`);}catch(e){toast(e.message,true);}finally{busy(false);}
 });
 $('#dependency').addEventListener('click',async()=>{
   if(state.busy)return;
   busy(true);
-  try{state.graph=await api('/api/dependency',{active:!state.graph.mutationActive});$('#dependency').setAttribute('aria-checked',String(state.graph.mutationActive));$('#dependency-label').textContent=state.graph.mutationActive?'Dependency added':'Add dependency';if(state.report){state.stale=true;renderReport();}else renderGraph();toast(state.graph.mutationActive?'Added Analytics → Payments. Run again to discover the changed customer exposure.':'Removed Analytics → Payments. Run again to refresh exposure.');}catch(e){toast(e.message,true);}finally{busy(false);}
+  try{state.graph=await api('/api/dependency',{active:!state.graph.mutationActive});$('#dependency').setAttribute('aria-checked',String(state.graph.mutationActive));$('#dependency-label').textContent=state.graph.mutationActive?'Dependency added':'Add dependency';if(state.report){state.stale=true;state.staleReason='Graph changed';renderReport();}else renderGraph();toast(state.graph.mutationActive?'Added Analytics → Payments. Run again to discover the changed customer exposure.':'Removed Analytics → Payments. Run again to refresh exposure.');}catch(e){toast(e.message,true);}finally{busy(false);}
 });
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>selectTab(btn.dataset.tab)));
 document.addEventListener('click',async e=>{const button=e.target.closest('[data-source]');if(!button)return;try{const data=await api(`/api/source?ref=${encodeURIComponent(button.dataset.source)}`);$('#source-title').textContent=data.ref;$('#source-content').textContent=JSON.stringify(data.record,null,2);$('#source-dialog').showModal();}catch(error){toast(error.message,true);}});

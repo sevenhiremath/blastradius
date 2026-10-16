@@ -52,9 +52,13 @@ Recommendations are not automatically stored as successful fixes. An observed ou
 
 The default graph policy agent runs without a paid model key. Its four tools retrieve changes, customers, ownership, and memory. Its ranking and abstention policy are visible in the code.
 
-An optional model-backed agent can select from those same four read-only tools. It cannot invent arbitrary Cypher or execute production changes. Arguments are validated against known service IDs, and the loop has turn and tool-call limits. Model interpretation appears separately from the deterministic graph evidence.
+An optional model-backed agent selects from those same four read-only tools. It cannot issue arbitrary Cypher or execute production changes. Arguments are validated against known service IDs, and the loop has turn and tool-call limits.
 
-This initial build's model transport is tested using simulated responses and real database queries. A live model run is not included in the measured results. Before presenting the optional AI mode, configure a provider and validate it end to end.
+Live testing with Qwen 3.8 27B through Groq's Free plan revealed a useful failure: the first freely written answer supplied an unsupported previous version and an incorrect relative date. Source links alone had not prevented those claims.
+
+The final model contract is therefore a structured selection: deployment ID, response category, and exact customer IDs. The app rejects invented IDs, incomplete customer sets, unsupported response categories, and free prose. It requires customer, owner, and memory tool results for the chosen service, then renders the factual narrative from those database rows. A known-good prior version is described as unknown when the graph does not contain it. This checks consistency with retrieved evidence; it does not prove that the graph is complete or that the selected deployment caused the incident.
+
+Separate live checks now pass for the baseline, the added dependency, and the insufficient-evidence case. Each run used the real model and all four graph tools. Their actual traces are included in the repository, separately from the deterministic evaluation.
 
 ## What we checked
 
@@ -66,7 +70,7 @@ One useful case has no recent eligible Analytics deployment. With the extra depe
 
 ## What comes next
 
-The next practical steps are live telemetry ingestion, testing with a configured model, time-aware dependency changes, and better candidate ranking. Real deployment would also need authentication, tenant separation, concurrency controls beyond a single-process queue, and a reviewed action workflow.
+The next practical steps are live telemetry ingestion, broader adversarial model evaluation, time-aware dependency changes, and better candidate ranking. Real deployment would also need authentication, tenant separation, concurrency controls beyond a single-process queue, and a reviewed action workflow.
 
 For this weekend's scope, the contribution is concrete: a graph that determines the investigation, exposes the evidence path, and preserves the incident outcome for the next session.
 

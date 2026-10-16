@@ -49,9 +49,10 @@ export async function investigate(store, scenarioId, question='') {
 }
 
 export async function loadInvestigation(store,id) {
-  const rows=await store.query(`MATCH (i:Incident {id:$id}) WHERE i.origin='investigation' RETURN i.report AS report,i.status AS status,i.outcome AS outcome`,{id});
+  const rows=await store.query(`MATCH (i:Incident {id:$id}) WHERE i.origin='investigation' RETURN i.report AS report,i.status AS status,i.outcome AS outcome,i.aiAnalysis AS aiAnalysis`,{id});
   if(!rows.length) return null;
-  return {...JSON.parse(rows[0].report),status:rows[0].status,outcome:rows[0].outcome};
+  const analysis=rows[0].aiAnalysis?JSON.parse(rows[0].aiAnalysis):null;
+  return {...JSON.parse(rows[0].report),status:rows[0].status,outcome:rows[0].outcome,...(analysis?.validation?{aiAnalysis:analysis}:{})};
 }
 
 export async function createTicket(store, id) {

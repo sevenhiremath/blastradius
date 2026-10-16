@@ -31,11 +31,13 @@ Date: October 16, 2026 (IST).
 
 ## Model boundary
 
-The optional AI tool agent is implemented and tested with simulated model responses that execute real FalkorDB queries. Unknown tool names and invented service identifiers are rejected. A real external model/provider has not yet been verified in this record. No model-quality or real-outage accuracy claim is made.
+The AI tool agent has simulated-transport integration tests plus three real Qwen 3.8 27B/Groq Free plan checks: baseline Checkout, added Analytics dependency, and Analytics with insufficient evidence. All four graph tools were called in each live run. See `live-ai-check.json`, `live-ai-changed-check.json`, and `live-ai-analytics-check.json` for actual results and traces. These three cases are not a model-quality or real-outage accuracy benchmark.
+
+Early live testing exposed tool fan-out and unsupported version/date prose. The final runner forces a single first query and accepts a structured selection. Validation rejects unsupported deployments, incomplete customer sets, prose/extra fields, missing ownership/memory evidence, and rollback categories unsupported by the signal threshold. The factual report is rendered from retrieved records. Tests include negative cases for invented deployments, unsupported prose, partial exposure, and weak-evidence rollback decisions.
 
 ## Walkthrough
 
-`artifacts/BlastRadius-walkthrough.mp4` is a narrated walkthrough assembled from actual captured UI states. It is approximately 95 seconds, 1920×1080 H.264 video with AAC narration. It is not a continuous screen recording and does not claim a live model call. The narration is synthesized with a local Windows voice.
+`docs/walkthrough.mp4` is a roughly two-minute narrated walkthrough assembled from actual captured UI states, including the saved result of a real Groq model run. It is 1920×1080 H.264 video with AAC narration. It is not a continuous screen recording. The narration is synthesized with a local Windows voice.
 
 ## Interpretation limits
 

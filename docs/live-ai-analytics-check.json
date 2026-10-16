@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-10-16T08:47:30.664Z",
+  "investigationId": "6f482107-5f6d-4720-8aee-4280e1f89eda",
+  "provider": "Groq",
+  "model": "qwen/qwen3.8-27b",
+  "mode": "analytics",
+  "liveProvider": true,
+  "passed": true,
+  "scope": "One synthetic analytics investigation; not a model-accuracy benchmark",
+  "text": "No eligible recent deployment was found. More evidence is required.\n\nCustomer exposure: 1 customers; $210,000 annual revenue exposed, not confirmed loss.\n\nCedar Health: cedar → analytics. Sources: contracts/cedar.json.\n\nResponse owner: Iris Das (Insights; catalog/teams/insights.yaml).\n\nResponse: gather live telemetry before choosing a mitigation; no rollback recommendation.\n\nThe model selected the records and response category. This factual report is rendered from validated graph results. No production action or notification was executed.",
+  "selection": {
+    "candidateId": null,
+    "decision": "gather_more_evidence",
+    "customerIds": [
+      "cedar"
+    ]
+  },
+  "validation": "Deployment, exact customer set, response category, ownership, and memory checked against retrieved graph rows",
+  "trace": [
+    {
+      "tool": "candidates",
+      "params": {
+        "service": "analytics"
+      },
+      "query": "MATCH p=(alerted:Service {id:$service})-[:DEPENDS_ON*0..6]->(s:Service)<-[:DEPLOYED_TO]-(d:Deployment) WHERE d.minutesAgo <= 60 AND d.errorDelta > 0 RETURN d.id AS id, d.name AS name, d.summary AS summary, d.minutesAgo AS minutesAgo, d.errorDelta AS errorDelta, d.source AS source, s.id AS service, length(p) AS hops ORDER BY errorDelta DESC, minutesAgo ASC",
+      "rows": []
+    },
+    {
+      "tool": "customers",
+      "params": {
+        "service": "analytics"
+      },
+      "query": "MATCH p=(c:Customer)-[:USES]->(:Service)-[:DEPENDS_ON*0..6]->(s:Service {id:$service}) RETURN c.id AS id, c.name AS name, c.arr AS arr, c.tier AS tier, [n IN nodes(p) | n.id] AS path, [r IN relationships(p) | r.source] AS sources ORDER BY c.name",
+      "rows": [
+        {
+          "id": "cedar",
+          "name": "Cedar Health",
+          "arr": 210000,
+          "tier": "Enterprise",
+          "path": [
+            "cedar",
+            "analytics"
+          ],
+          "sources": [
+            "contracts/cedar.json"
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "owners",
+      "params": {
+        "service": "analytics"
+      },
+      "query": "MATCH (s:Service {id:$service})-[:OWNED_BY]->(p:Person) RETURN p.name AS name, p.team AS team, p.source AS source",
+      "rows": [
+        {
+          "name": "Iris Das",
+          "team": "Insights",
+          "source": "catalog/teams/insights.yaml"
+        }
+      ]
+    },
+    {
+      "tool": "memory",
+      "params": {
+        "service": "analytics"
+      },
+      "query": "MATCH (i:Incident)-[:ABOUT]->(s:Service {id:$service}) WHERE i.status = 'resolved' RETURN i.id AS id, i.title AS title, i.outcome AS outcome, i.fix AS fix, i.status AS status, i.createdAt AS createdAt, i.source AS source ORDER BY createdAt DESC LIMIT 8",
+      "rows": []
+    }
+  ]
+}

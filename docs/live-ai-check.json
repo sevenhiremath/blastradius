@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-10-16T08:43:24.844Z",
+  "investigationId": "406fa607-2ff7-4f3b-b924-1baa9c8027ab",
+  "provider": "Groq",
+  "model": "qwen/qwen3.8-27b",
+  "liveProvider": true,
+  "passed": true,
+  "scope": "One synthetic Checkout investigation; not a model-accuracy benchmark",
+  "text": "Candidate hypothesis: payments v1.4.2. Changed 8 minutes before the synthetic alert; error increase 28 percentage points. Source: deployments/payments-v1.4.2.json. Causation is not established.\n\nCustomer exposure: 3 customers; $420,000 annual revenue exposed, not confirmed loss.\n\nAtlas Market: atlas → checkout → payments. Sources: contracts/atlas.json, catalog/services/checkout.yaml.\n\nNorthstar Retail: northstar → storefront → checkout → payments. Sources: contracts/northstar.json, catalog/services/storefront.yaml, catalog/services/checkout.yaml.\n\nOrbit Labs: orbit → subscriptions → payments. Sources: contracts/orbit.json, catalog/services/subscriptions.yaml.\n\nResponse owner: Arjun Rao (Money movement; catalog/teams/money-movement.yaml).\n\nRecorded memory: Checkout error rate above 25%, 2026-10-16T08:22:23.201Z. Outcome: Synthetic demo outcome: inspected payment pool saturation; reverting the pool configuration restored authorization success.. Source: investigations/21b8eef9-c789-461a-8dc6-a93e342cb889.\n\nRecorded memory: Payment connection pool exhausted, 2026-10-12T08:30:00Z. Outcome: Pool saturation confirmed; rollback restored authorizations in 4 minutes.. Source: postmortems/INC-018.md.\n\nResponse: verify the deployment diff and live health signals. If the regression is confirmed, consider rollback to a verified known-good deployment. The prior version is not provided in this evidence.\n\nThe model selected the records and response category. This factual report is rendered from validated graph results. No production action or notification was executed.",
+  "selection": {
+    "candidateId": "deploy-pay-142",
+    "decision": "verify_then_consider_rollback",
+    "customerIds": [
+      "atlas",
+      "northstar",
+      "orbit"
+    ]
+  },
+  "validation": "Deployment, exact customer set, response category, ownership, and memory checked against retrieved graph rows",
+  "trace": [
+    {
+      "tool": "candidates",
+      "params": {
+        "service": "checkout"
+      },
+      "query": "MATCH p=(alerted:Service {id:$service})-[:DEPENDS_ON*0..6]->(s:Service)<-[:DEPLOYED_TO]-(d:Deployment) WHERE d.minutesAgo <= 60 AND d.errorDelta > 0 RETURN d.id AS id, d.name AS name, d.summary AS summary, d.minutesAgo AS minutesAgo, d.errorDelta AS errorDelta, d.source AS source, s.id AS service, length(p) AS hops ORDER BY errorDelta DESC, minutesAgo ASC",
+      "rows": [
+        {
+          "id": "deploy-pay-142",
+          "name": "payments v1.4.2",
+          "summary": "Connection-pool limit reduced from 40 to 4",
+          "minutesAgo": 8,
+          "errorDelta": 28,
+          "source": "deployments/payments-v1.4.2.json",
+          "service": "payments",
+          "hops": 2
+        },
+        {
+          "id": "deploy-ledger-87",
+          "name": "ledger v8.7.0",
+          "summary": "Read replica configuration changed",
+          "minutesAgo": 34,
+          "errorDelta": 2,
+          "source": "deployments/ledger-v8.7.0.json",
+          "service": "ledger",
+          "hops": 3
+        }
+      ]
+    },
+    {
+      "tool": "customers",
+      "params": {
+        "service": "payments"
+      },
+      "query": "MATCH p=(c:Customer)-[:USES]->(:Service)-[:DEPENDS_ON*0..6]->(s:Service {id:$service}) RETURN c.id AS id, c.name AS name, c.arr AS arr, c.tier AS tier, [n IN nodes(p) | n.id] AS path, [r IN relationships(p) | r.source] AS sources ORDER BY c.name",
+      "rows": [
+        {
+          "id": "atlas",
+          "name": "Atlas Market",
+          "arr": 96000,
+          "tier": "Growth",
+          "path": [
+            "atlas",
+            "checkout",
+            "payments"
+          ],
+          "sources": [
+            "contracts/atlas.json",
+            "catalog/services/checkout.yaml"
+          ]
+        },
+        {
+          "id": "northstar",
+          "name": "Northstar Retail",
+          "arr": 180000,
+          "tier": "Enterprise",
+          "path": [
+            "northstar",
+            "storefront",
+            "checkout",
+            "payments"
+          ],
+          "sources": [
+            "contracts/northstar.json",
+            "catalog/services/storefront.yaml",
+            "catalog/services/checkout.yaml"
+          ]
+        },
+        {
+          "id": "orbit",
+          "name": "Orbit Labs",
+          "arr": 144000,
+          "tier": "Enterprise",
+          "path": [
+            "orbit",
+            "subscriptions",
+            "payments"
+          ],
+          "sources": [
+            "contracts/orbit.json",
+            "catalog/services/subscriptions.yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "owners",
+      "params": {
+        "service": "payments"
+      },
+      "query": "MATCH (s:Service {id:$service})-[:OWNED_BY]->(p:Person) RETURN p.name AS name, p.team AS team, p.source AS source",
+      "rows": [
+        {
+          "name": "Arjun Rao",
+          "team": "Money movement",
+          "source": "catalog/teams/money-movement.yaml"
+        }
+      ]
+    },
+    {
+      "tool": "memory",
+      "params": {
+        "service": "payments"
+      },
+      "query": "MATCH (i:Incident)-[:ABOUT]->(s:Service {id:$service}) WHERE i.status = 'resolved' RETURN i.id AS id, i.title AS title, i.outcome AS outcome, i.fix AS fix, i.status AS status, i.createdAt AS createdAt, i.source AS source ORDER BY createdAt DESC LIMIT 8",
+      "rows": [
+        {
+          "id": "21b8eef9-c789-461a-8dc6-a93e342cb889",
+          "title": "Checkout error rate above 25%",
+          "outcome": "Synthetic demo outcome: inspected payment pool saturation; reverting the pool configuration restored authorization success.",
+          "fix": "Synthetic demo outcome: inspected payment pool saturation; reverting the pool configuration restored authorization success.",
+          "status": "resolved",
+          "createdAt": "2026-10-16T08:22:23.201Z",
+          "source": "investigations/21b8eef9-c789-461a-8dc6-a93e342cb889"
+        },
+        {
+          "id": "INC-018",
+          "title": "Payment connection pool exhausted",
+          "outcome": "Pool saturation confirmed; rollback restored authorizations in 4 minutes.",
+          "fix": "Inspect pool saturation; if confirmed, roll back payments and monitor authorization errors.",
+          "status": "resolved",
+          "createdAt": "2026-10-12T08:30:00Z",
+          "source": "postmortems/INC-018.md"
+        }
+      ]
+    }
+  ]
+}

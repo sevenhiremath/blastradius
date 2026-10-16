@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { connectGraph,seed,setDependency } from '../src/graph.js';
 import { investigate,loadInvestigation,createTicket,resolveIncident } from '../src/agent.js';
 import { scenarios } from '../src/data.js';
-import { runToolAgent } from '../src/llm.js';
+import { runToolAgent,validateAndRender } from '../src/llm.js';
 
 test('real FalkorDB investigation, mutations, memory, and bounded model tools',async t=>{
   const name=`br_test_${randomUUID().replaceAll('-','')}`;
@@ -46,9 +46,16 @@ test('real FalkorDB investigation, mutations, memory, and bounded model tools',a
     await t.test('unknown incident is rejected',async()=>{await assert.rejects(()=>investigate(store,'missing'),/Unknown/);});
     const call=(name,service,id)=>({id,type:'function',function:{name,arguments:JSON.stringify({service})}});
     await t.test('model tool loop executes real graph queries with a simulated provider',async()=>{
-      const replies=[{tool_calls:[call('candidates','checkout','c1')]},{tool_calls:[call('customers','payments','c2'),call('owners','payments','c3'),call('memory','payments','c4')]},{content:'Synthetic provider response: payments is a hypothesis. Verify deployments/payments-v1.4.2.json.'}];
+      const replies=[{tool_calls:[call('candidates','checkout','c1')]},{tool_calls:[call('customers','payments','c2'),call('owners','payments','c3'),call('memory','payments','c4')]},{content:JSON.stringify({candidateId:'deploy-pay-142',decision:'verify_then_consider_rollback',customerIds:['atlas','northstar','orbit']})}];
       const result=await runToolAgent(store,report,{request:async()=>replies.shift()});
       assert.equal(result.trace.length,4);assert.equal(result.trace[1].rows.length,3);assert.match(result.text,/hypothesis/);
+      assert.match(result.validation,/checked/);
+      const invalid={candidateId:'deploy-pay-142',decision:'verify_then_consider_rollback',customerIds:['atlas']};
+      assert.throws(()=>validateAndRender(JSON.stringify(invalid),result.trace,report),/does not match/);
+      assert.throws(()=>validateAndRender('Roll back to invented v1.4.1 yesterday',result.trace,report),/structured selection/);
+      assert.throws(()=>validateAndRender(JSON.stringify({...invalid,candidateId:'invented'}),result.trace,report),/unsupported deployment/);
+      const weak=await investigate(store,'ledger');
+      assert.throws(()=>validateAndRender(JSON.stringify({candidateId:'deploy-ledger-87',decision:'verify_then_consider_rollback',customerIds:['atlas','harbor','northstar','orbit']}),weak.trace,weak),/does not support/);
     });
     await t.test('unapproved model tools and invented service IDs are rejected',async()=>{
       await assert.rejects(()=>runToolAgent(store,report,{request:async()=>({tool_calls:[call('delete_database','checkout','x')]})}),/unsupported/);

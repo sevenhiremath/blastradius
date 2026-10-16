@@ -8,7 +8,7 @@
 
 **Primary track:** Agents That Act on Connected Data
 
-**Secondary track to consider after live AI validation:** Agent Memory and Coordination. The project has persistent incident memory, but does not claim multi-agent coordination.
+**Possible secondary track:** Agent Memory and Coordination. The project has persistent incident memory and saved model traces, but does not claim multi-agent coordination.
 
 ## Description
 
@@ -16,7 +16,7 @@ BlastRadius investigates a software incident by following service relationships 
 
 The central demo adds one dependency. Analytics begins depending on Payments; a fresh investigation discovers another customer, raising synthetic annual revenue exposure from $420k to $630k. Removing that relationship reverses the result. Investigations and observed outcomes are retained as graph memory across sessions.
 
-The default is a transparent graph policy agent. An optional model agent selects among four bounded graph tools. This initial version's model loop is tested with a simulated transport; live provider validation remains to be completed before demonstrating that mode.
+The default is a transparent graph policy agent. The model agent selects among four bounded graph tools and returns a structured decision. Its selected deployment and exact customer set are validated against retrieved rows; the factual report is rendered from those rows. Real Qwen/Groq checks pass for the baseline, changed dependency, and insufficient-evidence cases, with actual tool traces included.
 
 ## Technology
 
@@ -33,9 +33,9 @@ Five synthetic candidate/exposure scenarios and the dependency mutation; persist
 ## Before pressing Submit
 
 - Review the implementation and make a meaningful participant contribution. Update `AI_DISCLOSURE.md` truthfully.
-- Configure and validate the optional model agent with a real provider for a stronger AI-agent submission.
+- Reproduce the live model demo using the configured Free plan and explain the validated-selection design.
 - Ensure the final repository is public and accessible without login.
-- Upload the demo video and put its actual URL in the form and README.
+- The repository includes `docs/walkthrough.mp4`. Use its public URL or upload the reviewed video to your preferred video host and put its actual URL in the form.
 - Publish the reviewed blog draft for the separate blog prize, and add its actual URL.
 - Use the verified local setup instructions if no public deployment is available.
 - Confirm final team membership before submitting; the registration page says it cannot be changed after submission.

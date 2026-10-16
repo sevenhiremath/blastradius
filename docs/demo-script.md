@@ -1,6 +1,6 @@
-# Demo script — approximately 90 seconds
+# Demo script — approximately two minutes
 
-Use actual application captures. Do not show simulated model text as a real AI-provider response. The initial walkthrough uses the graph policy agent, clearly labelled on screen. The optional AI tool mode should be demonstrated separately after live provider validation.
+Use actual application captures. The first part uses graph policy mode, clearly labelled. The final scene shows a saved report from the real Qwen/Groq agent, with validated selections and actual graph tool calls. Do not show a simulated provider response as a real model run.
 
 **0:00 — The problem**
 
@@ -35,6 +35,12 @@ Create a local ticket. Save an explicitly synthetic observed outcome. Reload, th
 Turn the dependency off. Select Analytics and run.
 
 “When there is no recent supporting change, the agent asks for more evidence. BlastRadius gives the response a path you can inspect. It does not claim that correlation proves the cause.”
+
+**1:35 — Real model, checked decisions**
+
+Open the saved validated AI report in Response desk.
+
+“The real model calls the four graph tools and chooses a deployment, customer set, and response category. The app validates those choices against the retrieved rows and renders the facts. An invented previous version is rejected instead of entering the report. The model run and its actual tool trace are saved with the incident.”
 
 ## Recording note
 
