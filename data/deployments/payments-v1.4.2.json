@@ -1,0 +1,12 @@
+{
+  "type": "synthetic deployment telemetry",
+  "id": "deploy-pay-142",
+  "service": "payments",
+  "name": "payments v1.4.2",
+  "minutesAgo": 8,
+  "errorDelta": 28,
+  "summary": "Connection-pool limit reduced from 40 to 4",
+  "source": "deployments/payments-v1.4.2.json",
+  "errorDeltaUnit": "percentage points",
+  "timeReference": "minutes before 2026-10-16T10:15:00Z"
+}

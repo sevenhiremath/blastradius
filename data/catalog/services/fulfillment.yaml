@@ -1,0 +1,10 @@
+{
+  "type": "synthetic service catalog",
+  "id": "fulfillment",
+  "name": "Fulfillment",
+  "owner": "Zoe Reed",
+  "team": "Operations",
+  "dependsOn": [
+    "ledger"
+  ]
+}

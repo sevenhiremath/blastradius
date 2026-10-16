@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-10-16T08:34:53.856Z",
+  "database": "FalkorDB",
+  "mode": "deterministic graph policy; no live LLM evaluation",
+  "dataset": "synthetic-v1; five fixed scenarios, not a generalization benchmark",
+  "results": [
+    {
+      "scenario": "checkout",
+      "expectedCandidate": "deploy-pay-142",
+      "actualCandidate": "deploy-pay-142",
+      "candidateCorrect": true,
+      "expectedCustomers": [
+        "atlas",
+        "northstar",
+        "orbit"
+      ],
+      "actualCustomers": [
+        "atlas",
+        "northstar",
+        "orbit"
+      ],
+      "exposureCorrect": true,
+      "rollbackSuggested": true,
+      "elapsedMs": 9
+    },
+    {
+      "scenario": "payments",
+      "expectedCandidate": "deploy-pay-142",
+      "actualCandidate": "deploy-pay-142",
+      "candidateCorrect": true,
+      "expectedCustomers": [
+        "atlas",
+        "northstar",
+        "orbit"
+      ],
+      "actualCustomers": [
+        "atlas",
+        "northstar",
+        "orbit"
+      ],
+      "exposureCorrect": true,
+      "rollbackSuggested": true,
+      "elapsedMs": 10
+    },
+    {
+      "scenario": "ledger",
+      "expectedCandidate": "deploy-ledger-87",
+      "actualCandidate": "deploy-ledger-87",
+      "candidateCorrect": true,
+      "expectedCustomers": [
+        "atlas",
+        "harbor",
+        "northstar",
+        "orbit"
+      ],
+      "actualCustomers": [
+        "atlas",
+        "harbor",
+        "northstar",
+        "orbit"
+      ],
+      "exposureCorrect": true,
+      "rollbackSuggested": false,
+      "elapsedMs": 4
+    },
+    {
+      "scenario": "search",
+      "expectedCandidate": "deploy-search-50",
+      "actualCandidate": "deploy-search-50",
+      "candidateCorrect": true,
+      "expectedCustomers": [
+        "lumen"
+      ],
+      "actualCustomers": [
+        "lumen"
+      ],
+      "exposureCorrect": true,
+      "rollbackSuggested": true,
+      "elapsedMs": 7
+    },
+    {
+      "scenario": "analytics",
+      "expectedCandidate": null,
+      "actualCandidate": null,
+      "candidateCorrect": true,
+      "expectedCustomers": [
+        "cedar"
+      ],
+      "actualCustomers": [
+        "cedar"
+      ],
+      "exposureCorrect": true,
+      "rollbackSuggested": false,
+      "elapsedMs": 4
+    }
+  ],
+  "mutation": {
+    "newEdge": "analytics -> payments",
+    "customers": [
+      "atlas",
+      "cedar",
+      "northstar",
+      "orbit"
+    ],
+    "arr": 630000,
+    "passed": true
+  },
+  "passed": true
+}

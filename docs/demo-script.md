@@ -1,0 +1,41 @@
+# Demo script — approximately 90 seconds
+
+Use actual application captures. Do not show simulated model text as a real AI-provider response. The initial walkthrough uses the graph policy agent, clearly labelled on screen. The optional AI tool mode should be demonstrated separately after live provider validation.
+
+**0:00 — The problem**
+
+“Checkout is failing. But the customer impact does not stop at the service that raised the alert. BlastRadius follows the relationships behind an incident and shows the evidence for its response.”
+
+**0:12 — Investigate**
+
+Run the Checkout scenario with the dependency toggle off.
+
+“The agent queries FalkorDB for recent changes reachable from Checkout. Payments is a supported hypothesis. Three customers are connected to the failure point, representing 420 thousand dollars in synthetic annual revenue exposure, not confirmed losses.”
+
+**0:30 — Explain**
+
+Select Northstar's path. Open the deployment source. Open one query trace.
+
+“Here is the complete path, including the source records. We can inspect the actual Cypher, parameters, and database rows. The graph also identifies Arjun as the response owner and recalls a previous pool-exhaustion incident.”
+
+**0:48 — Change the context**
+
+Add the dependency and rerun.
+
+“Now add one relationship: Analytics depends on Payments. A new investigation discovers Cedar Health. Four customers are exposed, totaling 630 thousand dollars. The response plan updates because the graph changed.”
+
+**1:05 — Act and remember**
+
+Create a local ticket. Save an explicitly synthetic observed outcome. Reload, then open incident memory.
+
+“We create a local coordination ticket and record what actually happened. The report and outcome persist in FalkorDB and can inform the next session.”
+
+**1:20 — Know when to stop**
+
+Turn the dependency off. Select Analytics and run.
+
+“When there is no recent supporting change, the agent asks for more evidence. BlastRadius gives the response a path you can inspect. It does not claim that correlation proves the cause.”
+
+## Recording note
+
+A narrated walkthrough assembled from actual captured app states is included when generated. It is not a continuous screen recording or a live-model benchmark. For a final submission, record your own live run after reviewing and contributing to the project so you can explain each decision.

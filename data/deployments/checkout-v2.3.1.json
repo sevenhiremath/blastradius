@@ -1,0 +1,12 @@
+{
+  "type": "synthetic deployment telemetry",
+  "id": "deploy-check-231",
+  "service": "checkout",
+  "name": "checkout v2.3.1",
+  "minutesAgo": 150,
+  "errorDelta": 0,
+  "summary": "Copy update on receipt response",
+  "source": "deployments/checkout-v2.3.1.json",
+  "errorDeltaUnit": "percentage points",
+  "timeReference": "minutes before 2026-10-16T10:15:00Z"
+}

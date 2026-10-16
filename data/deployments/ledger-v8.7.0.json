@@ -1,0 +1,12 @@
+{
+  "type": "synthetic deployment telemetry",
+  "id": "deploy-ledger-87",
+  "service": "ledger",
+  "name": "ledger v8.7.0",
+  "minutesAgo": 34,
+  "errorDelta": 2,
+  "summary": "Read replica configuration changed",
+  "source": "deployments/ledger-v8.7.0.json",
+  "errorDeltaUnit": "percentage points",
+  "timeReference": "minutes before 2026-10-16T10:15:00Z"
+}

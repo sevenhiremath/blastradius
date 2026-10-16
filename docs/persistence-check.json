@@ -1,0 +1,6 @@
+{
+  "databaseRecreated": true,
+  "incidentId": "21b8eef9-c789-461a-8dc6-a93e342cb889",
+  "status": "resolved",
+  "outcome": "Synthetic demo outcome: inspected payment pool saturation; reverting the pool configuration restored authorization success."
+}

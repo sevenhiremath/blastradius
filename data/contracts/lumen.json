@@ -1,0 +1,7 @@
+{
+  "type": "synthetic customer contract",
+  "customer": "Lumen Studio",
+  "service": "search",
+  "annualRevenueUSD": 48000,
+  "tier": "Starter"
+}

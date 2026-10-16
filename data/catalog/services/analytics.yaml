@@ -1,0 +1,8 @@
+{
+  "type": "synthetic service catalog",
+  "id": "analytics",
+  "name": "Analytics",
+  "owner": "Iris Das",
+  "team": "Insights",
+  "dependsOn": []
+}

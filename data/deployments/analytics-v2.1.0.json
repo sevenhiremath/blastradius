@@ -1,0 +1,12 @@
+{
+  "type": "synthetic deployment telemetry",
+  "id": "deploy-analytics-21",
+  "service": "analytics",
+  "name": "analytics v2.1.0",
+  "minutesAgo": 900,
+  "errorDelta": 0,
+  "summary": "Dashboard labels refreshed",
+  "source": "deployments/analytics-v2.1.0.json",
+  "errorDeltaUnit": "percentage points",
+  "timeReference": "minutes before 2026-10-16T10:15:00Z"
+}

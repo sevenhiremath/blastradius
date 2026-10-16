@@ -1,0 +1,8 @@
+{
+  "type": "synthetic service catalog",
+  "id": "ledger",
+  "name": "Ledger DB",
+  "owner": "Nora Ali",
+  "team": "Data platform",
+  "dependsOn": []
+}

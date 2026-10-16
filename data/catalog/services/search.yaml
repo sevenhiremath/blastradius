@@ -1,0 +1,8 @@
+{
+  "type": "synthetic service catalog",
+  "id": "search",
+  "name": "Search",
+  "owner": "Sam Ortiz",
+  "team": "Discovery",
+  "dependsOn": []
+}
