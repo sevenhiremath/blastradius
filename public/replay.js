@@ -8,7 +8,7 @@ async function load(stage='alert'){
   loading=true;$('#stage').disabled=true;$('#advance').disabled=true;$('#download').disabled=true;
   $('#connection').textContent='Following graph evidence…';
   try{
-    const response=await fetch(`/api/replay?stage=${encodeURIComponent(stage)}`);
+    const response=await fetch('/api/replay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stage})});
     const data=await response.json();if(!response.ok)throw new Error(data.error||'Replay unavailable');
     report=data;
     $('#stage').innerHTML=data.stages.map(s=>`<option value="${esc(s.id)}">${esc(s.label)}</option>`).join('');$('#stage').value=data.stage.id;
@@ -21,7 +21,7 @@ async function load(stage='alert'){
     $('#trace').innerHTML=data.trace.map(t=>`<details class="trace-item"><summary>${esc(t.tool)} <span>${t.rows.length} rows</span></summary><pre>${esc(JSON.stringify(t,null,2))}</pre></details>`).join('');
     $('#snapshot').textContent=`Packet SHA-256 ${data.digest.slice(0,16)}… · Run saved in FalkorDB`;
     $('#connection').textContent=`FalkorDB connected · ${utc(data.stage.at)}`;$('#download').disabled=false;
-  }catch(e){$('#connection').textContent=`Replay unavailable: ${e.message}. Start Docker and reload.`;}
+  }catch(e){if(report)$('#stage').value=report.stage.id;$('#connection').textContent=`Replay unavailable: ${e.message}. Start Docker and reload.`;}
   finally{loading=false;$('#stage').disabled=!report;$('#advance').disabled=!report||report.stage.id===report.stages.at(-1).id;}
 }
 $('#stage').addEventListener('change',()=>load($('#stage').value));

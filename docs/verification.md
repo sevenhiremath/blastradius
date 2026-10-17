@@ -2,6 +2,18 @@
 
 Date: October 16, 2026 (IST).
 
+## Public replay update — October 18, 2026 (IST)
+
+- Added an attributed historical public-incident packet and a separate `/replay` interface; the original fictional sandbox remains separate.
+- Docker Compose rebuilt and started the updated application successfully. The earlier resolved incident `21b8eef9-c789-461a-8dc6-a93e342cb889` remained readable after app replacement.
+- Full key-free suite: **21 reported tests passed**, including the two enclosing integration tests. No live provider calls were made for this update.
+- `pnpm evaluate:replay` passed all five event-time checkpoints and the dependency-removal counterexample; see `public-replay-evaluation.json`.
+- Verified that the first-alert query excludes later diagnostic/action events, missing customer/revenue/owner data remain unknown, and traffic recovery does not mark protection restored.
+- Removing the connecting dependency removes the candidate even though diagnostic event records still exist. Import is idempotent; changing a packet under the same case ID is rejected. Audit reports survive a new connection.
+- Browser checks: selected pre-change, diagnostic, and recovery checkpoints; confirmed changing assessments and evidence; downloaded an actual JSON evidence packet. Checked the narrow-screen layout without horizontal overflow and restored the viewport. Screenshot: `screenshots/public-replay.jpg`.
+- HTTP checks: POST replay returned the expected candidate and event count; a cross-origin POST returned 403. Reports are created through POST, not a side-effecting GET.
+- The implementation was checked on a feature branch before integration into main. The public replay is one manually curated historical case with a simplified functional model, not raw production telemetry, live diagnosis, or an LLM accuracy benchmark.
+
 ## Executed against real FalkorDB
 
 - Docker Compose image build and one-command local startup succeeded.

@@ -33,6 +33,7 @@ const server=http.createServer(async(req,res)=>{
       if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return send(res,403,{error:'Cross-origin write rejected'});
       if(!req.headers['content-type']?.startsWith('application/json'))return send(res,415,{error:'JSON required'});
       const input=await body(req);
+      if(url.pathname==='/api/replay')return send(res,200,await serial(()=>investigatePublicIncident(store,input.stage||'alert')));
       if(url.pathname==='/api/investigate') {
         if(typeof input.question!=='undefined'&&(typeof input.question!=='string'||input.question.length>2000))return send(res,400,{error:'Question must be text under 2000 characters'});
         return send(res,200,await serial(()=>investigate(store,input.scenario,input.question)));
@@ -64,7 +65,6 @@ const server=http.createServer(async(req,res)=>{
     }
     if(url.pathname==='/api/bootstrap')return send(res,200,{scenarios:scenarios.map(({expectedCandidate,expectedCustomers,...s})=>s),graph:await topology(store),queries,modelEnabled:Boolean(process.env.LLM_API_KEY)});
     if(url.pathname==='/api/history')return send(res,200,{incidents:await store.query(queries.history),tickets:await store.query(queries.tickets)});
-    if(url.pathname==='/api/replay')return send(res,200,await serial(()=>investigatePublicIncident(store,url.searchParams.get('stage')||'alert')));
     if(url.pathname==='/api/source') {
       const ref=url.searchParams.get('ref');
       const record=Object.hasOwn(sourceRecords,ref)?sourceRecords[ref]:null;

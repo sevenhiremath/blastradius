@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-10-17T18:49:31.616Z",
+  "dataset": "cloudflare-2019-07-02",
+  "mode": "historical graph policy; no model call",
+  "scope": "One manually curated public postmortem, five event-time checkpoints; not a blind diagnostic benchmark or production telemetry evaluation",
+  "stages": [
+    {
+      "stage": "before",
+      "at": "2019-07-02T13:40:00Z",
+      "status": "Insufficient evidence at this time",
+      "candidate": null,
+      "eventIds": [],
+      "surfaces": [],
+      "futureEvidenceExcluded": true,
+      "unknownCustomerCount": true,
+      "unknownRevenue": true
+    },
+    {
+      "stage": "alert",
+      "at": "2019-07-02T13:45:00Z",
+      "status": "Candidate only; verify before acting",
+      "candidate": "rules",
+      "eventIds": [
+        "rules",
+        "page"
+      ],
+      "surfaces": [
+        "dashboard",
+        "public-http"
+      ],
+      "futureEvidenceExcluded": true,
+      "unknownCustomerCount": true,
+      "unknownRevenue": true
+    },
+    {
+      "stage": "confirmed",
+      "at": "2019-07-02T14:00:00Z",
+      "status": "Corroborated by diagnostic evidence",
+      "candidate": "rules",
+      "eventIds": [
+        "rules",
+        "page",
+        "cpu"
+      ],
+      "surfaces": [
+        "dashboard",
+        "public-http"
+      ],
+      "futureEvidenceExcluded": true,
+      "unknownCustomerCount": true,
+      "unknownRevenue": true
+    },
+    {
+      "stage": "mitigated",
+      "at": "2019-07-02T14:09:00Z",
+      "status": "Traffic recovered; protection not yet restored",
+      "candidate": "rules",
+      "eventIds": [
+        "rules",
+        "page",
+        "cpu",
+        "disable",
+        "traffic"
+      ],
+      "surfaces": [
+        "dashboard",
+        "public-http"
+      ],
+      "futureEvidenceExcluded": true,
+      "unknownCustomerCount": true,
+      "unknownRevenue": true
+    },
+    {
+      "stage": "restored",
+      "at": "2019-07-02T14:52:00Z",
+      "status": "Restored in public record",
+      "candidate": "rules",
+      "eventIds": [
+        "rules",
+        "page",
+        "cpu",
+        "disable",
+        "traffic",
+        "enable"
+      ],
+      "surfaces": [
+        "dashboard",
+        "public-http"
+      ],
+      "futureEvidenceExcluded": true,
+      "unknownCustomerCount": true,
+      "unknownRevenue": true
+    }
+  ],
+  "dependencyRemovalChangesAnswer": true,
+  "passed": true
+}

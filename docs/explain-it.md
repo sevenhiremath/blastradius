@@ -12,6 +12,11 @@
 
 ## Questions to practice
 
+- How does the public incident lab differ from the sandbox? The lab contains attributed facts from a real public postmortem; the sandbox has fictional customers, money, owners, and telemetry. They use separate graph labels.
+- What does the historical clock mean? It filters by event time, not when responders actually learned a fact. The packet was curated retrospectively, so this is not a blind diagnosis experiment.
+- Does recovered traffic mean an incident is fully restored? No. The replay distinguishes mitigation, traffic recovery, and restoration, and keeps unavailable values unknown.
+- Is the public replay model-driven? No. `src/replay.js` implements an explicit graph policy; the sandbox's optional Groq agent is separate. Read the replay query catalog and `src/replay-data.js` to understand source provenance and modeled relationships.
+
 - Why does a Checkout alert expose a Subscriptions customer? Both depend on Payments; exposure is computed from the candidate failure point, not just the alerted service.
 - Why is the Search deployment excluded from the Checkout investigation? No downstream dependency path connects Checkout to Search.
 - Does the biggest error delta prove a cause? No. It is an explicit heuristic over a reachable deployment. Live telemetry and the diff must be checked.
