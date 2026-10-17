@@ -34,6 +34,7 @@ export async function runToolAgent(store,report,{request=providerRequest}={}){
       let args;try{args=JSON.parse(call.function.arguments);}catch{throw new Error('Model returned invalid tool arguments');}
       if(!args||typeof args!=='object'||Array.isArray(args)||Object.keys(args).length!==1||!services.some(s=>s.id===args.service))throw new Error('Model tool arguments were rejected');
       if(!trace.length&&(tool!=='candidates'||args.service!==report.alertedService))throw new Error('First model tool call must investigate the alerted service');
+      if(trace.some(t=>t.tool===tool&&t.params.service===args.service))throw new Error('Model repeated a graph tool for the same service. Graph policy report is still available.');
       const rows=await store.query(queries[tool],args);
       trace.push({tool,params:args,query:queries[tool],rows});
       messages.push({role:'tool',tool_call_id:call.id,content:JSON.stringify(rows)});
