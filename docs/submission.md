@@ -12,7 +12,7 @@
 
 ## Description
 
-BlastRadius investigates a software incident by following service relationships in FalkorDB. Starting from an alert, it finds reachable recent deployments, traces exposed customers, retrieves the response owner and previous incidents, and creates a local incident ticket with evidence. Every customer has an inspectable dependency path, and every tool call exposes its query, parameters, and results.
+BlastRadius helps on-call engineers and incident commanders investigate software outages by following service relationships in FalkorDB. Starting from an alert, it finds reachable recent deployments, traces exposed customers, retrieves the response owner and previous incidents, and creates a local incident ticket with evidence. Every customer has an inspectable dependency path, and every tool call exposes its query, parameters, and results.
 
 A separate public incident lab replays a real incident using attributed factual paraphrases from a first-party postmortem. Advancing the historical event clock changes the evidence and assessment. It distinguishes diagnostic corroboration, traffic recovery, and restoration while leaving unavailable customer, revenue, and owner data unknown. Its dependency graph is explicitly a simplified functional model, not an internal service catalog. This mode runs the transparent graph policy, not an LLM diagnosis or live monitoring.
 
