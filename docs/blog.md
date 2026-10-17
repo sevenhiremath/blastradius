@@ -68,7 +68,13 @@ Integration checks cover persisted outcomes, idempotent ticket creation, invalid
 
 One useful case has no recent eligible Analytics deployment. With the extra dependency off, the agent recommends gathering evidence rather than rolling back an unrelated change. The Ledger case contains a recent but weak signal; its response also avoids recommending a rollback.
 
-## What comes next
+## Adding a public incident replay
+
+The project now includes a separate historical incident lab, documented in `docs/public-incident-replay.md`. It imports short attributed factual paraphrases from a public first-party postmortem, with a packet digest and explicit modeling assumptions. Advancing an event-time cutoff changes the retrieved evidence and policy assessment. The graph distinguishes a candidate, diagnostic corroboration, mitigation, recovery, and restoration; missing customer and revenue data remain unknown. Removing a connecting dependency removes the candidate in a database-backed counterexample test.
+
+This is a retrospective, manually curated replay, not live production telemetry or a blind evaluation. The original sandbox's AI model integration remains separate. The most useful lesson is that realism includes temporal boundaries, uncertainty, and provenance, rather than replacing invented numbers with equally unsupported real-company claims.
+
+## Further work
 
 The next practical steps are live telemetry ingestion, broader adversarial model evaluation, time-aware dependency changes, and better candidate ranking. Real deployment would also need authentication, tenant separation, concurrency controls beyond a single-process queue, and a reviewed action workflow.
 
@@ -76,6 +82,6 @@ For this weekend's scope, the contribution is concrete: a graph that determines 
 
 ---
 
-AI assistance: Codex assisted with initial implementation, verification, and this article draft. Participant review and meaningful contribution must be documented before publication or submission. All company names, contracts, and incident measurements are synthetic.
+AI assistance: Codex assisted with implementation, verification, public-fact curation, and this article draft. Participant review and meaningful contribution must be documented before publication or submission. Sandbox companies and measurements are fictional; the separately labelled historical replay uses attributed public facts.
 
 References: [Graph Hacks](https://www.wemakedevs.org/hackathons/falkordb), [FalkorDB client](https://github.com/FalkorDB/falkordb-ts), [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling).

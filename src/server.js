@@ -8,9 +8,11 @@ import { queries } from './queries.js';
 import { investigate,loadInvestigation,createTicket,resolveIncident } from './agent.js';
 import { runToolAgent } from './llm.js';
 import { sourceRecords } from './sources.js';
+import { seedPublicIncident,investigatePublicIncident } from './replay.js';
 
 const store=await connectGraph();
 await seed(store);
+await seedPublicIncident(store);
 const publicDir=fileURLToPath(new URL('../public/',import.meta.url));
 const port=Number(process.env.PORT||4317);
 const host=process.env.HOST||'127.0.0.1';
@@ -62,6 +64,7 @@ const server=http.createServer(async(req,res)=>{
     }
     if(url.pathname==='/api/bootstrap')return send(res,200,{scenarios:scenarios.map(({expectedCandidate,expectedCustomers,...s})=>s),graph:await topology(store),queries,modelEnabled:Boolean(process.env.LLM_API_KEY)});
     if(url.pathname==='/api/history')return send(res,200,{incidents:await store.query(queries.history),tickets:await store.query(queries.tickets)});
+    if(url.pathname==='/api/replay')return send(res,200,await serial(()=>investigatePublicIncident(store,url.searchParams.get('stage')||'alert')));
     if(url.pathname==='/api/source') {
       const ref=url.searchParams.get('ref');
       const record=Object.hasOwn(sourceRecords,ref)?sourceRecords[ref]:null;
@@ -71,7 +74,7 @@ const server=http.createServer(async(req,res)=>{
       const report=await loadInvestigation(store,url.pathname.split('/').at(-1));
       return send(res,report?200:404,report||{error:'Not found'});
     }
-    const files={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/favicon.svg':'favicon.svg'};
+    const files={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/favicon.svg':'favicon.svg','/replay':'replay.html','/replay.js':'replay.js','/replay.css':'replay.css'};
     const file=files[url.pathname];
     if(!file)return send(res,404,{error:'Not found'});
     const data=await readFile(path.join(publicDir,file));

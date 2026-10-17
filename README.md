@@ -6,6 +6,8 @@ BlastRadius investigates a software incident by following service dependencies i
 
 Built for Graph Hacks 2026 · Team cloud9 · Primary track: **Agents That Act on Connected Data**.
 
+**New: public incident lab.** Open `/replay` to investigate a real incident using manually curated facts from a first-party public postmortem. Advance the event clock, inspect source-linked paths, and distinguish candidate evidence, diagnostic corroboration, traffic recovery, and restoration. Customer counts and revenue remain unknown. This historical graph-policy replay is separate from the synthetic sandbox and its optional AI mode. [Source, limitations, and reproducible steps](docs/public-incident-replay.md).
+
 ![BlastRadius investigation](docs/screenshots/overview.jpg)
 
 [Watch the two-minute walkthrough](docs/walkthrough.mp4) · [Review the graph queries](docs/queries.cypher) · [Read the validation record](docs/verification.md)
@@ -123,6 +125,7 @@ With FalkorDB running, install development dependencies as above and run:
 ```sh
 pnpm test
 pnpm evaluate
+pnpm evaluate:replay
 ```
 
 Tests use isolated, uniquely named graphs and remove only those test graphs. Evaluation writes `docs/evaluation.json`.
@@ -155,4 +158,4 @@ Browser → local Node HTTP server → official FalkorDB client → FalkorDB gra
 
 Codex assisted with the initial implementation, tests, interface, provider validation, and draft materials. The participant must review and understand the code, reproduce the demo, add meaningful technical decisions or improvements, and accurately describe their own contribution before submission. See `AI_DISCLOSURE.md`. A functioning app is not a guarantee of eligibility or a prize.
 
-MIT licensed. Synthetic names, companies, contracts, and measurements are fictional.
+MIT licensed. Sandbox names, companies, contracts, and measurements are fictional. The public replay contains attributed factual paraphrases of a real incident; the source article remains its publisher's work and is not relicensed by this repository.

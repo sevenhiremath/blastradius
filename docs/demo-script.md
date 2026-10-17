@@ -1,4 +1,6 @@
-# Demo script — approximately two minutes
+# Demo script — approximately two to three minutes
+
+Final submission update: the form requires a public or unlisted **YouTube** URL. The existing MP4 is an older synthetic-sandbox draft. Include a 30–40 second public-replay segment after the graph mutation: open `/replay`, advance from First alert to Diagnostic evidence to Traffic recovers, and show why traffic recovery is not full restoration. State that these are curated public historical facts and a simplified functional model, not live telemetry or an LLM diagnosis. Keep the real Groq tool trace in the sandbox segment. Narration or clear captions should make the distinction understandable.
 
 Use actual application captures. The first part uses graph policy mode, clearly labelled. The final scene shows a saved report from the real Qwen/Groq agent, with validated selections and actual graph tool calls. Do not show a simulated provider response as a real model run.
 

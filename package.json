@@ -1,6 +1,6 @@
 {
   "name": "blastradius", "version": "1.0.0", "private": true, "type": "module",
   "description": "Evidence-first incident investigation powered by FalkorDB",
-  "scripts": { "start": "node --env-file-if-exists=.env src/server.js", "test": "node --env-file-if-exists=.env --test --test-concurrency=1 test/*.test.js", "evaluate": "node --env-file-if-exists=.env scripts/evaluate.js" },
+  "scripts": { "start": "node --env-file-if-exists=.env src/server.js", "test": "node --env-file-if-exists=.env --test --test-concurrency=1 test/*.test.js", "evaluate": "node --env-file-if-exists=.env scripts/evaluate.js", "evaluate:replay": "node --env-file-if-exists=.env scripts/replay-evaluate.js" },
   "engines": { "node": ">=22.9" }, "dependencies": { "falkordb": "6.8.0" }
 }
