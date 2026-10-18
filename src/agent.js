@@ -60,8 +60,8 @@ export async function createTicket(store, id) {
   if(!report) throw new Error('Investigation not found');
   // Deterministic id + MERGE makes repeated clicks idempotent.
   const ticket={id:`BR-${id.slice(0,8).toUpperCase()}`,title:report.title,createdAt:new Date().toISOString()};
-  await store.query(`MATCH (i:Incident {id:$incident}) MERGE (t:Ticket {id:$id}) ON CREATE SET t.title=$title,t.status='open',t.createdAt=$createdAt,t.body=$body MERGE (t)-[:FOR]->(i)`,{...ticket,incident:id,body:JSON.stringify({recommendation:report.recommendation,customers:report.customers,owner:report.owners,trace:report.trace})});
-  return ticket;
+  const rows=await store.query(`MATCH (i:Incident {id:$incident}) MERGE (t:Ticket {id:$id}) ON CREATE SET t.title=$title,t.status='open',t.createdAt=$createdAt,t.body=$body MERGE (t)-[:FOR]->(i) RETURN t.id AS id,t.title AS title,t.createdAt AS createdAt`,{...ticket,incident:id,body:JSON.stringify({recommendation:report.recommendation,customers:report.customers,owner:report.owners,trace:report.trace})});
+  return rows[0];
 }
 
 export async function resolveIncident(store,id,outcome) {

@@ -35,8 +35,13 @@ test('real FalkorDB investigation, mutations, memory, and bounded model tools',a
       report=await investigate(store,'checkout');assert.equal(report.customers.length,3);
     });
     await t.test('tickets are idempotent and outcomes survive a new database connection',async()=>{
-      const a=await createTicket(store,report.id),b=await createTicket(store,report.id);
+      const a=await createTicket(store,report.id);
+      // Model a retry of an older ticket without relying on wall-clock delays.
+      const originalCreatedAt='2026-10-15T09:00:00.000Z';
+      await store.query('MATCH (t:Ticket {id:$id}) SET t.createdAt=$createdAt',{id:a.id,createdAt:originalCreatedAt});
+      const b=await createTicket(store,report.id);
       assert.equal(a.id,b.id);
+      assert.equal(b.createdAt,originalCreatedAt,'retry responses must preserve the stored creation time');
       const count=await store.query('MATCH (t:Ticket) RETURN count(t) AS total');assert.equal(count[0].total,1);
       await resolveIncident(store,report.id,'Synthetic test observation: payment pool reset restored authorizations.');
       await store.close();store=await connectGraph(name);
