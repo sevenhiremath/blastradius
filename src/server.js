@@ -9,6 +9,7 @@ import { investigate,loadInvestigation,createTicket,resolveIncident } from './ag
 import { runToolAgent } from './llm.js';
 import { sourceRecords } from './sources.js';
 import { seedPublicIncident,investigatePublicIncident } from './replay.js';
+import { readJsonBody } from './request-body.js';
 
 const store=await connectGraph();
 await seed(store);
@@ -20,11 +21,6 @@ let mutation=Promise.resolve();
 // Serialize graph edits/investigations so a mutation cannot split one report across graph states.
 const serial=fn=>{const p=mutation.then(fn);mutation=p.catch(()=>{});return p;};
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};
-async function body(req) {
-  let text='';
-  for await(const chunk of req){text+=chunk;if(Buffer.byteLength(text)>16384)throw new Error('Request too large');}
-  return text?JSON.parse(text):{};
-}
 const server=http.createServer(async(req,res)=>{
   try {
     const url=new URL(req.url,'http://localhost');
@@ -32,7 +28,7 @@ const server=http.createServer(async(req,res)=>{
       // This local single-user app rejects cross-origin mutations, including browser form posts.
       if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return send(res,403,{error:'Cross-origin write rejected'});
       if(!req.headers['content-type']?.startsWith('application/json'))return send(res,415,{error:'JSON required'});
-      const input=await body(req);
+      const input=await readJsonBody(req);
       if(url.pathname==='/api/replay')return send(res,200,await serial(()=>investigatePublicIncident(store,input.stage||'alert')));
       if(url.pathname==='/api/investigate') {
         if(typeof input.question!=='undefined'&&(typeof input.question!=='string'||input.question.length>2000))return send(res,400,{error:'Question must be text under 2000 characters'});

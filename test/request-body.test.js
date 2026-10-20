@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readJsonBody } from '../src/request-body.js';
+
+async function* chunks(text,size=1){
+  const bytes=Buffer.from(text);
+  for(let offset=0;offset<bytes.length;offset+=size)yield bytes.subarray(offset,offset+size);
+}
+
+test('JSON requests preserve Unicode when network chunks split characters',async()=>{
+  const input={question:'Payment recovered ✅ — भुगतान ठीक है — 支払いが復旧しました 🙂'};
+  assert.deepEqual(await readJsonBody(chunks(JSON.stringify(input))),input);
+});
+
+test('empty request bodies keep the existing empty-object behavior',async()=>{
+  assert.deepEqual(await readJsonBody(chunks('')),{});
+});
+
+test('a request at the 16 KiB limit is accepted',async()=>{
+  const input={note:'a'.repeat(16384-Buffer.byteLength(JSON.stringify({note:''})))};
+  const json=JSON.stringify(input);
+  assert.equal(Buffer.byteLength(json),16384);
+  assert.deepEqual(await readJsonBody(chunks(json,1000)),input);
+});
+
+test('request limits count UTF-8 bytes rather than JavaScript characters',async()=>{
+  const json=JSON.stringify({note:'🙂'.repeat(5000)});
+  assert.ok(json.length<16384);assert.ok(Buffer.byteLength(json)>16384);
+  await assert.rejects(()=>readJsonBody(chunks(json,1000)),/Request too large/);
+});
+
+test('malformed JSON is rejected',async()=>{
+  await assert.rejects(()=>readJsonBody(chunks('{"note":')),SyntaxError);
+});
