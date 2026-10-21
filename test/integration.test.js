@@ -12,9 +12,11 @@ test('real FalkorDB investigation, mutations, memory, and bounded model tools',a
   try{
     await seed(store);
     for(const scenario of scenarios){
-      await t.test(`${scenario.id}: expected candidate and complete exposure`,async()=>{
+      await t.test(`${scenario.id}: expected candidate, dependency distance, and complete exposure`,async()=>{
         const r=await investigate(store,scenario.id);
         assert.equal(r.candidate?.id||null,scenario.expectedCandidate);
+        if(r.candidate)assert.equal(r.candidate.hops,scenario.id==='checkout'?1:0,'distance counts service dependencies only');
+        if(scenario.id==='checkout')assert.equal(r.alternatives.find(d=>d.id==='deploy-ledger-87').hops,2);
         assert.deepEqual(r.customers.map(c=>c.id).sort(),scenario.expectedCustomers.slice().sort());
         assert.equal(r.trace.length,4);
         assert.ok(r.customers.every(c=>c.path.at(-1)===r.focalService));
