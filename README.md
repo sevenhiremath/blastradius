@@ -98,7 +98,7 @@ Find reachable recent changes:
 MATCH p=(alerted:Service {id:$service})-[:DEPENDS_ON*0..6]->(s:Service)
 MATCH (d:Deployment)-[:DEPLOYED_TO]->(s)
 WHERE d.minutesAgo <= 60 AND d.errorDelta > 0
-RETURN d.id, d.name, d.errorDelta, d.minutesAgo, length(p)
+RETURN d.id, d.name, d.errorDelta, d.minutesAgo, min(length(p)) AS hops
 ORDER BY d.errorDelta DESC, d.minutesAgo ASC
 ```
 
@@ -114,7 +114,7 @@ RETURN c.id, c.name, c.arr,
 
 Customers are deduplicated before revenue is summed; the shortest returned path per customer is displayed. Traversals are bounded to six service dependency hops. All query inputs are parameters, not model-written query text.
 
-Candidate `hops` counts only service dependencies: a change on the alerted service has distance zero. The deployment relationship is matched separately so it does not inflate that distance.
+Candidate `hops` counts only service dependencies: a change on the alerted service has distance zero. The deployment relationship is matched separately so it does not inflate that distance. When several paths reach the same deployment, the query returns it once with its shortest dependency distance.
 
 ### Why the graph changes the decision
 

@@ -23,6 +23,19 @@ test('real FalkorDB investigation, mutations, memory, and bounded model tools',a
         assert.equal(r.rollbackSuggested,['checkout','payments','search'].includes(scenario.id));
       });
     }
+    await t.test('converging dependency paths return each deployment once at its shortest distance',async()=>{
+      await store.query(`MATCH (a:Service {id:'checkout'}),(b:Service {id:'ledger'}) CREATE (a)-[:DEPENDS_ON {source:'test/converging-dependency'}]->(b)`);
+      try{
+        const r=await investigate(store,'checkout');
+        const candidates=[r.candidate,...r.alternatives];
+        assert.equal(candidates.length,2,'two paths to Ledger must not duplicate its deployment');
+        assert.equal(new Set(candidates.map(d=>d.id)).size,candidates.length);
+        assert.equal(candidates.find(d=>d.id==='deploy-ledger-87').hops,1,'use the shortest dependency path');
+        assert.equal(r.candidate.id,'deploy-pay-142','path multiplicity must not change signal ranking');
+      }finally{
+        await store.query(`MATCH (:Service {id:'checkout'})-[r:DEPENDS_ON]->(:Service {id:'ledger'}) DELETE r`);
+      }
+    });
     let report;
     await t.test('one new edge changes exposure and preserves exact evidence',async()=>{
       const before=await investigate(store,'checkout');
