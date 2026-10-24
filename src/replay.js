@@ -12,15 +12,17 @@ export const replayQueries={
 
 export function validateIncident(data){
   const fail=()=>{throw new Error('Invalid public incident packet');};
-  if(!data||!/^[-a-z0-9]+$/.test(data.id)||!data.source?.url?.startsWith('https://')||!data.source.title||!data.title||!data.provenance||!data.limitation)fail();
+  // RegExp.test coerces undefined, null, numbers, and booleans into matching text.
+  const validId=id=>typeof id==='string'&&/^[-a-z0-9]+$/.test(id);
+  if(!data||!validId(data.id)||!data.source?.url?.startsWith('https://')||!data.source.title||!data.title||!data.provenance||!data.limitation)fail();
   if(!Array.isArray(data.nodes)||!data.nodes.length||data.nodes.length>50||!Array.isArray(data.events)||data.events.length>100||!Array.isArray(data.edges)||data.edges.length>100||!Array.isArray(data.stages)||!data.stages.length)fail();
   const ids=new Set(data.nodes.map(n=>n.id));
   // Date.parse normalizes impossible days and 24:00; require an exact UTC round trip.
   const validTime=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(s)&&Number.isFinite(Date.parse(s))&&new Date(s).toISOString()===s.replace('Z','.000Z');
-  if(ids.size!==data.nodes.length||!ids.has(data.alert)||data.nodes.some(n=>!/^[-a-z0-9]+$/.test(n.id)||!n.name||!['surface','component'].includes(n.kind)))fail();
+  if(ids.size!==data.nodes.length||!ids.has(data.alert)||data.nodes.some(n=>!validId(n.id)||!n.name||!['surface','component'].includes(n.kind)))fail();
   if(data.edges.some(e=>!ids.has(e.from)||!ids.has(e.to)||e.from===e.to)||new Set(data.edges.map(e=>`${e.from}:${e.to}`)).size!==data.edges.length)fail();
-  if(new Set(data.events.map(e=>e.id)).size!==data.events.length||data.events.some(e=>!/^[-a-z0-9]+$/.test(e.id)||!ids.has(e.node)||!validTime(e.at)||!e.text||!['change','alert','diagnostic','mitigation','recovery','restoration'].includes(e.kind)))fail();
-  if(new Set(data.stages.map(s=>s.id)).size!==data.stages.length||data.stages.some(s=>!/^[-a-z0-9]+$/.test(s.id)||!s.label||!validTime(s.at)))fail();
+  if(new Set(data.events.map(e=>e.id)).size!==data.events.length||data.events.some(e=>!validId(e.id)||!ids.has(e.node)||!validTime(e.at)||!e.text||!['change','alert','diagnostic','mitigation','recovery','restoration'].includes(e.kind)))fail();
+  if(new Set(data.stages.map(s=>s.id)).size!==data.stages.length||data.stages.some(s=>!validId(s.id)||!s.label||!validTime(s.at)))fail();
   return data;
 }
 
