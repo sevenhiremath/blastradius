@@ -39,6 +39,26 @@ pnpm start
 
 Stop the Compose `app` service first if it already owns port 4317. Copy `.env.example` to `.env` to override local settings. In Compose, the graph host and port are set to the container service automatically.
 
+### If Docker cannot connect
+
+An error mentioning `dockerDesktopLinuxEngine`, a missing Docker pipe, or an unreachable Docker daemon means Compose cannot reach the container engine. Open Docker Desktop and wait for its engine to finish starting, then check:
+
+```sh
+docker info
+```
+
+Continue when this shows a **Server** section without a connection error. If Docker Desktop reports a startup failure, resolve that error in Docker Desktop first; rebuilding BlastRadius requires a running engine.
+
+Once the engine is available, start the application and inspect its services:
+
+```sh
+docker compose up --build -d --wait
+docker compose ps
+docker compose logs --tail 50 graph
+```
+
+Both services should be healthy. Reopen http://localhost:4317 after they recover. These commands retain the existing `graph-data` volume and saved incident memory; avoid `docker compose down --volumes` or a factory reset when preserving that data.
+
 ## The 90-second proof
 
 1. Choose **Checkout error rate above 25%** and run the investigation.
