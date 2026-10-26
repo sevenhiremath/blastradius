@@ -25,6 +25,7 @@ export async function runToolAgent(store,report,{request=providerRequest}={}){
       if(typeof msg.content!=='string'||!msg.content.trim())throw new Error('Model returned no analysis');
       return {...validateAndRender(msg.content,trace,report),trace,model:process.env.LLM_MODEL||'gpt-4.1-mini'};
     }
+    if(turn===0&&calls.length!==1)throw new Error('First model reply must contain exactly one graph tool call. Graph policy report is still available.');
     if(complete)throw new Error('Provider ignored final-answer mode; extra tool calls rejected');
     if(calls.length>4||trace.length+calls.length>12)throw new Error(`Model exceeded its graph tool budget (${calls.length} requested in this turn; ${trace.length} already used)`);
     messages.push({role:'assistant',content:msg.content||null,tool_calls:calls});
