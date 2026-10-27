@@ -32,3 +32,9 @@ test('request limits count UTF-8 bytes rather than JavaScript characters',async(
 test('malformed JSON is rejected',async()=>{
   await assert.rejects(()=>readJsonBody(chunks('{"note":')),SyntaxError);
 });
+
+test('non-object JSON bodies are rejected before API handlers read their fields',async()=>{
+  for(const json of ['null','[]','[{}]','true','false','0','42','"alert"']){
+    await assert.rejects(()=>readJsonBody(chunks(json)),/JSON body must be an object/,json);
+  }
+});

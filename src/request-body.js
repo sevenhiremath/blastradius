@@ -8,5 +8,7 @@ export async function readJsonBody(req) {
   }
   // A UTF-8 character may span network chunks; decode only after joining bytes.
   const text=Buffer.concat(chunks,bytes).toString('utf8');
-  return text?JSON.parse(text):{};
+  const input=text?JSON.parse(text):{};
+  if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('JSON body must be an object');
+  return input;
 }
