@@ -38,3 +38,15 @@ test('non-object JSON bodies are rejected before API handlers read their fields'
     await assert.rejects(()=>readJsonBody(chunks(json)),/JSON body must be an object/,json);
   }
 });
+
+test('invalid UTF-8 inside JSON strings is rejected instead of silently changing the text',async()=>{
+  for(const invalid of [[0xff],[0xc3,0x28],[0xf0,0x9f]]){
+    const body=Buffer.concat([Buffer.from('{"outcome":"'),Buffer.from(invalid),Buffer.from('"}')]);
+    await assert.rejects(()=>readJsonBody((async function*(){yield body;})()),{code:'ERR_ENCODING_INVALID_ENCODED_DATA'});
+  }
+});
+
+test('an intentionally encoded Unicode replacement character is preserved',async()=>{
+  const input={outcome:'Verified \uFFFD appears in the source log'};
+  assert.deepEqual(await readJsonBody(chunks(JSON.stringify(input))),input);
+});
