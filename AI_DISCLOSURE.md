@@ -26,6 +26,8 @@ On October 29, automated maintenance rejected malformed UTF-8 request bytes inst
 
 On October 30, automated maintenance added simulated-provider regression coverage for the six-turn, four-calls-per-reply, and twelve-total-calls AI tool budgets, verifying rejected calls do not reach the graph.
 
+On October 31, automated maintenance validated public replay source URLs with a URL parser before import, rejecting malformed HTTPS links and non-string values with key-free regressions.
+
 Codex also researched and implemented the public incident replay on October 18, 2026: the curated factual packet, simplified functional model, interface, event-time policy, and checks. This is AI-assisted implementation, not an independent participant contribution. It uses historical public facts, not live production telemetry, and runs a graph policy rather than an LLM diagnosis.
 
 The LLM tool loop has both simulated-transport integration tests and live checks using Qwen 3.8 27B through Groq's Free plan. The participant chose that provider and configured their key locally. The live checks cover baseline exposure, a changed dependency, and insufficient evidence. They are recorded separately from the deterministic five-scenario evaluation. Early live testing exposed unsupported factual prose; the final implementation uses validated model selections and renders the factual narrative from retrieved graph rows.

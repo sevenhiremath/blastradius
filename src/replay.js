@@ -14,7 +14,11 @@ export function validateIncident(data){
   const fail=()=>{throw new Error('Invalid public incident packet');};
   // RegExp.test coerces undefined, null, numbers, and booleans into matching text.
   const validId=id=>typeof id==='string'&&/^[-a-z0-9]+$/.test(id);
-  if(!data||!validId(data.id)||!data.source?.url?.startsWith('https://')||!data.source.title||!data.title||!data.provenance||!data.limitation)fail();
+  const validSource=url=>{
+    if(typeof url!=='string')return false;
+    try{const parsed=new URL(url);return parsed.protocol==='https:'&&Boolean(parsed.hostname);}catch{return false;}
+  };
+  if(!data||!validId(data.id)||!validSource(data.source?.url)||!data.source.title||!data.title||!data.provenance||!data.limitation)fail();
   if(!Array.isArray(data.nodes)||!data.nodes.length||data.nodes.length>50||!Array.isArray(data.events)||data.events.length>100||!Array.isArray(data.edges)||data.edges.length>100||!Array.isArray(data.stages)||!data.stages.length)fail();
   const ids=new Set(data.nodes.map(n=>n.id));
   // Date.parse normalizes impossible days and 24:00; require an exact UTC round trip.

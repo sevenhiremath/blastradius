@@ -24,6 +24,17 @@ test('a missing case identifier is rejected before any database query',async()=>
   assert.equal(queries,0);
 });
 
+test('replay sources require a parseable HTTPS URL before database access',async()=>{
+  for(const url of ['https://','https://[broken]/postmortem','http://example.com/postmortem','javascript:alert(1)',42,null]){
+    const packet=structuredClone(publicIncident);
+    packet.source.url=url;
+    let queries=0;
+    const store={query:async()=>{queries++;throw new Error('Database must not be called');}};
+    await assert.rejects(()=>seedPublicIncident(store,packet),/Invalid public incident packet/,String(url));
+    assert.equal(queries,0);
+  }
+});
+
 for(const field of ['events','stages']){
   test(`replay ${field} reject dates that JavaScript would silently normalize`,()=>{
     for(const at of ['2019-02-29T13:42:00Z','2019-04-31T13:42:00Z','2019-07-02T24:00:00Z']){
