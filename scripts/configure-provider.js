@@ -7,7 +7,8 @@ const provider=process.argv[2];
 if(!Object.hasOwn(profiles,provider))throw new Error('Choose groq or openai');
 let content;try{content=await readFile('.env','utf8');}catch{content=await readFile('.env.example','utf8');}
 for(const [key,value]of Object.entries(profiles[provider])){
-  const re=new RegExp(`^\\s*(?:#\\s*)?${key}=.*$`,'m');
+  // Update every occurrence: a later active assignment can override an example.
+  const re=new RegExp(`^\\s*(?:#\\s*)?${key}=.*$`,'mg');
   content=re.test(content)?content.replace(re,`${key}=${value}`):`${content.trimEnd()}\n${key}=${value}\n`;
 }
 await writeFile('.env',content);
